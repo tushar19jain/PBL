@@ -16,6 +16,30 @@ const MapView = ({ onHotelsFetched }) => {
   const [userLocation, setUserLocation] = useState(null);
   const [nearbyHotels, setNearbyHotels] = useState([]);
 
+  // 🔑 Replace this with your real key
+  const API_KEY = "YOUR_FOURSQUARE_API_KEY_HERE";
+
+  // Fetch image for a hotel
+  const getPhotoUrl = async (fsq_id) => {
+    try {
+      const res = await axios.get(`https://api.foursquare.com/v3/places/${fsq_id}/photos`, {
+        headers: {
+          Authorization: API_KEY,
+        },
+      });
+
+      if (res.data && res.data.length > 0) {
+        const photo = res.data[0];
+        return `${photo.prefix}original${photo.suffix}`;
+      } else {
+        return "/fallback.jpg"; // fallback
+      }
+    } catch (error) {
+      console.error("Photo fetch error:", error);
+      return "/fallback.jpg";
+    }
+  };
+
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -27,7 +51,7 @@ const MapView = ({ onHotelsFetched }) => {
         try {
           const response = await axios.get("https://api.foursquare.com/v3/places/search", {
             headers: {
-              Authorization: "fsq3DJaU0tLmlGDTuxhMwEWxylkxAgbDZsRvSYbVF1QRcyE=", // 🔐 Replace with real API key
+              Authorization: "fsq3DJaU0tLmlGDTuxhMwEWxylkxAgbDZsRvSYbVF1QRcyE=",
             },
             params: {
               ll: `${lat},${lng}`,
@@ -37,18 +61,25 @@ const MapView = ({ onHotelsFetched }) => {
             },
           });
 
-          const hotels = response.data.results.map((place, index) => ({
-            id: place.fsq_id,
-            name: place.name,
-            address: place.location?.formatted_address || "Address not available",
-            rating: (Math.random() * 2 + 3).toFixed(1),
-            price: Math.floor(Math.random() * 3000 + 1000),
-            photo: `https://source.unsplash.com/800x600/?hotel,${index}`,
-            location: {
-              lat: place.geocodes.main.latitude,
-              lng: place.geocodes.main.longitude,
-            },
-          }));
+          const results = response.data.results;
+          const hotels = await Promise.all(
+            results.map(async (place) => {
+              const photoUrl = await getPhotoUrl(place.fsq_id);
+
+              return {
+                id: place.fsq_id,
+                name: place.name,
+                address: place.location?.formatted_address || "Address not available",
+                rating: (Math.random() * 2 + 3).toFixed(1),
+                price: Math.floor(Math.random() * 3000 + 1000),
+                photo: photoUrl,
+                location: {
+                  lat: place.geocodes.main.latitude,
+                  lng: place.geocodes.main.longitude,
+                },
+              };
+            })
+          );
 
           setNearbyHotels(hotels);
           onHotelsFetched(hotels);
@@ -76,10 +107,12 @@ const MapView = ({ onHotelsFetched }) => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
+          {/* User Marker */}
           <Marker position={userLocation}>
             <Popup>You are here 📍</Popup>
           </Marker>
 
+          {/* Hotel Markers */}
           {nearbyHotels.map((hotel) => (
             <Marker
               key={hotel.id}
