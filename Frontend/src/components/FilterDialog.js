@@ -6,7 +6,7 @@ const FilterDialog = ({ hotels, onClose }) => {
       position: "fixed",
       top: 0,
       left: 0,
-      width: "100vw",
+      width: "10vw",
       height: "100vh",
       background: "rgba(0,0,0,0.5)",
       display: "flex",
