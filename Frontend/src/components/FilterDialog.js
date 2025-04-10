@@ -1,49 +1,35 @@
-import HotelCard from "./HotelCard";
-
-const FilterDialog = ({ hotels, onClose }) => {
+const FilterDialog = ({ onClose, onSort }) => {
   return (
-    <div style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "10vw",
-      height: "100vh",
-      background: "rgba(0,0,0,0.5)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 1000
-    }}>
-      <div style={{
-        width: "90%",
-        maxHeight: "90vh",
-        background: "#fff",
-        padding: "20px",
-        borderRadius: "10px",
-        overflowY: "auto",
-        position: "relative"
-      }}>
-        <button onClick={onClose} style={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-          background: "red",
-          color: "white",
-          border: "none",
-          padding: "6px 10px",
-          borderRadius: "4px",
-          cursor: "pointer"
-        }}>
-          ✖
+    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+      <div className="bg-white w-full max-w-sm rounded-xl p-6 shadow-lg relative">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-xl"
+        >
+          &times;
         </button>
-        <h2>Sorted by Shortest Distance</h2>
-        <div className="max-w-md w-full mx-auto  mb-20">
-        {hotels.map(hotel => (
-          <HotelCard key={hotel.id} hotel={hotel} />
-        ))}
+
+        <h2 className="text-lg font-semibold mb-4 text-gray-800 text-center">
+          Sort Hotels
+        </h2>
+
+        <div className="flex flex-col gap-4">
+          <button
+            onClick={() => onSort("distance")}
+            className="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium rounded transition"
+          >
+            Sort by Distance
+          </button>
+
+          <button
+            onClick={() => onSort("price")}
+            className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-800 font-medium rounded transition"
+          >
+            Sort by Price (Low to High)
+          </button>
         </div>
       </div>
-  
     </div>
   );
 };
