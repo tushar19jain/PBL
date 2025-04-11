@@ -10,7 +10,7 @@ const nodeModel= new mongoose.Schema(
 	},
 	type:{
 		type:String,
-		enum:["hotel","attraction","resturant"],
+		enum:["hotel","resort","homestay","camps"],
 		required:true,
 	},
 	coordinates:{
