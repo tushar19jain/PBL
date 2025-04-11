@@ -2,10 +2,12 @@ const express= require("express");
 const dotenv= require("dotenv");
 const cors= require("cors");
 const mongoConn= require('./config/db.js');
-const errorhandler=require('./middlewares/errorhandler.js')
+const errorhandler=require('./middlewares/errorhandler.js');
+const cookieParser=require('cookie-parser');
 const app= express();
 dotenv.config();
 app.use(cors());
+app.use(cookieParser());
 //setup cors
 app.use(express.json());
 const connectApp= async()=>{
