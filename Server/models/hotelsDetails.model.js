@@ -11,7 +11,7 @@ const hotelDetail=new mongoose.Schema({
 	description:String,
 	price:Number,
 	rating:Number,
-	roomType:[String],
+	roomType:{type:String,enum:["single","delux"]},
 	address:String
 
 })
